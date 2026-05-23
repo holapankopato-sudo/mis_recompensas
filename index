@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Panko Rewards</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
 
 <style>
-
 :root{
     --bg-color:#43b1c9;
     --bun-color:#e3f6f9;
@@ -17,6 +17,7 @@
 
 *{
     box-sizing:border-box;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body{
@@ -26,7 +27,7 @@ body{
     justify-content:center;
     align-items:center;
     background:var(--bg-color);
-    font-family:Arial, sans-serif;
+    font-family: Arial, sans-serif;
     color:white;
     padding:20px;
 }
@@ -39,6 +40,7 @@ body{
     border-radius:30px;
     padding:30px 20px;
     backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
     text-align:center;
     box-shadow:0 15px 35px rgba(0,0,0,0.2);
 }
@@ -143,179 +145,100 @@ body{
     text-align:center;
     font-size:1.2rem;
     padding:20px;
+    line-height: 1.5;
 }
-
 </style>
 </head>
 
 <body>
 
 <div class="card" id="card" style="display:none;">
-
     <div class="logo">🌭 PANKO</div>
-
     <div class="welcome">¡Hola!</div>
-
-    <div class="client-name" id="userName">
-        Cliente
-    </div>
+    <div class="client-name" id="userName">Cliente</div>
 
     <div class="hotdog-container">
-
         <div class="bun"></div>
-
         <div class="sausage"></div>
-
         <div class="sauce" id="sauceLayer">
-
             <svg class="sauce-svg" viewBox="0 0 340 40">
-
                 <path d="M10,20 Q25,0 40,20 T70,20 T100,20 T130,20 T160,20 T190,20 T220,20 T250,20 T280,20 T310,20"/>
-
             </svg>
-
         </div>
-
     </div>
 
     <div class="steps-grid" id="grid"></div>
-
-    <div class="footer-msg" id="statusMsg">
-        Cada compra te acerca a tu premio 🌭
-    </div>
-
+    <div class="footer-msg" id="statusMsg">Cada compra te acerca a tu premio 🌭</div>
 </div>
 
 <script>
-
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
+// Tu link público de Google Sheets está perfecto
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
 
 async function loadCard() {
-
     const params = new URLSearchParams(window.location.search);
-
     const id = params.get('id');
 
     if (!id) {
-
-        document.body.innerHTML =
-        "<div class='error'>❌ ID inválido</div>";
-
+        document.body.innerHTML = "<div class='error'>❌ ID inválido<br><small style='font-size:0.8rem; opacity:0.7;'>Asegúrate de incluir '?id=TU_ID' al final de la URL</small></div>";
         return;
     }
 
-    try {
-
-        const response = await fetch(CSV_URL);
-
-        let text = await response.text();
-
-        // limpiar UTF8
-        text = text.replace(/^\uFEFF/, '');
-
-        const rows = text.trim().split(/\r?\n/);
-
-        console.log(rows);
-
-        let found = null;
-
-        for (let i = 1; i < rows.length; i++) {
-
-            const cols = rows[i]
-            .split(',')
-            .map(col =>
-                col
-                .replace(/"/g, '')
-                .trim()
+    // Usamos PapaParse en lugar de un .split(',') manual para evitar fallos con los links de la columna E
+    Papa.parse(CSV_URL, {
+        download: true,
+        header: true, // Lee directamente los encabezados: ID, SELLOS, CLIENTE
+        skipEmptyLines: true,
+        complete: function(results) {
+            // Buscamos ignorando mayúsculas/minúsculas y espacios
+            const found = results.data.find(row => 
+                row.ID && String(row.ID).trim().toUpperCase() === String(id).trim().toUpperCase()
             );
 
-            console.log(cols);
-
-            const cliente = {
-
-                id: cols[0],
-
-                sellos: parseInt(cols[1]) || 0,
-
-                nombre: cols[2]
-            };
-
-            console.log(cliente);
-
-            if (
-                cliente.id === id
-            ) {
-
-                found = cliente;
-
-                break;
+            if (!found) {
+                document.body.innerHTML = `<div class='error'>❌ Cliente con ID "${id}" no encontrado <br><small style='font-size:0.8rem; opacity:0.7;'>Revisa tu Google Sheet</small></div>`;
+                return;
             }
+
+            // Mostrar tarjeta y asignar valores según tus columnas del Sheet
+            document.getElementById('card').style.display = 'block';
+            document.getElementById('userName').innerText = found.CLIENTE || 'Cliente';
+            
+            const countStamps = parseInt(found.SELLOS) || 0;
+            renderSteps(countStamps);
+        },
+        error: function(err) {
+            console.error(err);
+            document.body.innerHTML = "<div class='error'>❌ Error cargando la base de datos de Panko</div>";
         }
-
-        console.log(found);
-
-        if (!found) {
-
-            document.body.innerHTML =
-            "<div class='error'>❌ Cliente no encontrado</div>";
-
-            return;
-        }
-
-        document.getElementById('card').style.display =
-        'block';
-
-        document.getElementById('userName').innerText =
-        found.nombre;
-
-        renderSteps(found.sellos);
-
-    } catch (error) {
-
-        console.error(error);
-
-        document.body.innerHTML =
-        "<div class='error'>❌ Error cargando tarjeta</div>";
-    }
+    });
 }
 
 function renderSteps(count) {
-
-    const grid =
-    document.getElementById('grid');
-
-    const sauce =
-    document.getElementById('sauceLayer');
+    const grid = document.getElementById('grid');
+    const sauce = document.getElementById('sauceLayer');
 
     grid.innerHTML = '';
-
-    sauce.style.width =
-    ((count / 9) * 100) + "%";
+    
+    // Animación de la mostaza en base a 9 pasos
+    sauce.style.width = ((count / 9) * 100) + "%";
 
     for (let i = 1; i <= 9; i++) {
-
-        const div =
-        document.createElement('div');
-
-        div.className =
-        `step ${i <= count ? 'active' : ''}`;
-
-        div.innerHTML =
-        i === 9 ? "🎁" : i;
-
+        const div = document.createElement('div');
+        div.className = `step ${i <= count ? 'active' : ''}`;
+        div.innerHTML = i === 9 ? "🎁" : i;
         grid.appendChild(div);
     }
 
     if (count >= 9) {
-
-        document.getElementById('statusMsg').innerText =
-        "🎉 ¡FELICIDADES! Premio desbloqueado 🌭";
+        document.getElementById('statusMsg').innerText = "🎉 ¡FELICIDADES! Premio desbloqueado 🌭";
+    } else if (count > 0) {
+        document.getElementById('statusMsg').innerText = `¡Llevas ${count} de 9 sellos acumulados!`;
     }
 }
 
+// Arrancar la app
 loadCard();
-
 </script>
 </body>
 </html>
