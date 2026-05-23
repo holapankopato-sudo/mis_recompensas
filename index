@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Panko Pass - Mis Recompensas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <style>
+        :root {
+            --bg-color: #43b1c9; /* Turquesa de Panko */
+            --bun-color: #e3f6f9;
+            --sausage-color: #61cbd9;
+            --sauce-color: #f7e018; /* Amarillo mostaza */
+            --white-border: #ffffff;
+        }
+
+        /* Optimizaciones para móvil */
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            font-family: 'Arial Rounded MT Bold', 'Helvetica', sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            text-align: center;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.1);
+            letter-spacing: 1px;
+        }
+
+        .card-container {
+            position: relative;
+            width: 100%;
+            max-width: 360px;
+            padding: 30px 15px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 4px solid var(--white-border);
+            border-radius: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none; /* Se mantiene oculta hasta validar el ID */
+        }
+
+        .client-info {
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .client-welcome {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        .client-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        /* Gráfico del Hotdog Responsivo */
+        .hotdog-body {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3 / 1;
+            max-width: 280px;
+            margin: 20px 0;
+        }
+
+        .bun {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--bun-color);
+            border: 5px solid var(--white-border);
+            border-radius: 50px;
+            z-index: 1;
+        }
+
+        .sausage {
+            position: absolute;
+            top: 25%;
+            left: -5%;
+            width: 110%;
+            height: 50%;
+            background: var(--sausage-color);
+            border: 4px solid var(--white-border);
+            border-radius: 40px;
+            z-index: 2;
+        }
+
+        .sauce-container {
+            position: absolute;
+            top: 25%;
+            left: 0;
+            width: 0%; 
+            height: 50%;
+            z-index: 3;
+            overflow: hidden;
+            transition: width 1.2s ease-in-out;
+        }
+
+        .sauce-wave {
+            width: 280px;
+            height: 100%;
+            fill: none;
+            stroke: var(--sauce-color);
+            stroke-width: 12;
+            stroke-linecap: round;
+        }
+
+        /* Cuadrícula de Sellos (9 espacios) */
+        .steps-container {
+            width: 100%;
+            max-width: 280px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .step {
+            aspect-ratio: 1.2 / 1;
+            background: rgba(255, 255, 255, 0.25);
+            border: 2px solid var(--white-border);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            background: var(--sauce-color);
+            color: #333;
+            transform: scale(1.05);
+            border-color: var(--sauce-color);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .status-message {
+            margin-top: 25px;
+            font-size: 0.95rem;
+            text-align: center;
+            font-style: italic;
+            opacity: 0.9;
+            max-width: 280px;
+            line-height: 1.4;
+        }
+
+        /* Mensaje de error si el link está mal */
+        #errorCard {
+            text-align: center;
+            max-width: 340px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand-name">PANKO PASS</div>
+
+    <div class="card-container" id="mainCard">
+        <div class="client-info">
+            <div class="client-welcome">¡Hola, qué gusto verte!</div>
+            <div class="client-name" id="clientName">Cargando...</div>
+        </div>
+
+        <div class="hotdog-body">
+            <div class="bun"></div>
+            <div class="sausage"></div>
+            <div class="sauce-container" id="sauceProgress">
+                <svg class="sauce-wave" viewBox="0 0 280 40" preserveAspectRatio="none">
+                    <path d="M10,20 Q25,0 40,20 T70,20 T100,20 T130,20 T160,20 T190,20 T220,20 T250,20 T280,20" />
+                </svg>
+            </div>
+        </div>
+
+        <div class="steps-container" id="stepsGrid"></div>
+        
+        <div class="status-message" id="statusMessage">Cada compra te acerca más a tu Hot Dog gratis. 🌭</div>
+    </div>
+
+    <div id="errorCard">
+        <h2>Falta el código de tu tarjeta</h2>
+        <p>Por favor, escanea tu código QR o usa el enlace completo que te enviamos.</p>
+    </div>
+
+    <script>
+        // ====================================================================
+        // 1. REEMPLAZA ESTE LINK POR TU ENLACE DE GOOGLE SHEETS (DEBE TERMINAR EN output=csv)
+        // ====================================================================
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS_REEMPLAZA_ESTO_CON_TU_ID_DE_PUBLICACION/pub?output=csv";
+        
+        const totalSteps = 9;
+
+        async function initLoyaltyCard() {
+            // Capturar el ID desde la URL (?id=XXXX)
+            const urlParams = new URLSearchParams(window.location.search);
+            const clientId = urlParams.get('id');
+
+            if (!clientId) {
+                document.getElementById('errorCard').style.display = 'block';
+                return;
+            }
+
+            // Descargar y procesar tu Google Sheet en tiempo real
+            Papa.parse(CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    // Buscar la fila del cliente usando la columna ID
+                    const customer = results.data.find(row => String(row.ID).trim().toUpperCase() === String(clientId).trim().toUpperCase());
+
+                    if (customer) {
+                        // Mostrar la tarjeta y pintar los datos
+                        document.getElementById('mainCard').style.display = 'flex';
+                        document.getElementById('clientName').innerText = customer.CLIENTE;
+                        
+                        const sellosAcumulados = parseInt(customer.SELLOS) || 0;
+                        renderProgress(sellosAcumulados);
+                    } else {
+                        // Si el ID del link no coincide con ninguno del Excel
+                        document.getElementById('errorCard').innerHTML = `<h2>Código "${clientId}" no válido</h2><p>Verifica con el administrador de Panko.</p>`;
+                        document.getElementById('errorCard').style.display = 'block';
+                    }
+                },
+                error: function() {
+                    document.getElementById('errorCard').innerHTML = "<h2>Error de conexión</h2><p>No pudimos cargar tus sellos. Inténtalo de nuevo.</p>";
+                    document.getElementById('errorCard').style.display = 'block';
+                }
+            });
+        }
+
+        function renderProgress(stamps) {
+            // 1. Animación del aderezo de mostaza
+            const percentage = Math.min((stamps / totalSteps) * 100, 100);
+            document.getElementById('sauceProgress').style.width = percentage + '%';
+
+            // 2. Construir la cuadrícula de 9 bloques de sellos
+            const grid = document.getElementById('stepsGrid');
+            grid.innerHTML = ''; 
+
+            for (let i = 1; i <= totalSteps; i++) {
+                const box = document.createElement('div');
+                box.className = `step ${i <= stamps ? 'active' : ''}`;
+                
+                // El noveno sello muestra un premio
+                box.innerText = i === 9 ? "🎁" : i;
+                grid.appendChild(box);
+            }
+
+            // 3. Cambiar mensaje si ya completó la tarjeta
+            if (stamps >= totalSteps) {
+                document.getElementById('statusMessage').innerHTML = "<strong>¡Felicidades! 🏆<br>Tienes un Hot Dog GRATIS listo para reclamar.</strong>";
+            } else if (stamps > 0) {
+                document.getElementById('statusMessage').innerText = `¡Llevas ${stamps} de 9 sellos acumulados!`;
+            }
+        }
+
+        // Arrancar la aplicación al cargar la página
+        window.onload = initLoyaltyCard;
+    </script>
+</body>
+</html>
