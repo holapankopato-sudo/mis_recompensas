@@ -173,7 +173,7 @@ body{
 
 <script>
 // Tu link público de Google Sheets está perfecto
-const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
+const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
 
 async function loadCard() {
     const params = new URLSearchParams(window.location.search);
