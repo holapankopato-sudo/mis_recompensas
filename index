@@ -212,7 +212,7 @@
         // ====================================================================
         // 1. REEMPLAZA ESTE LINK POR TU ENLACE DE GOOGLE SHEETS (DEBE TERMINAR EN output=csv)
         // ====================================================================
-        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS_REEMPLAZA_ESTO_CON_TU_ID_DE_PUBLICACION/pub?output=csv";
+        const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
         
         const totalSteps = 9;
 
