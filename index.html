@@ -347,7 +347,8 @@ function renderSteps(count) {
         document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers ✨<br>Próxima meta: ¡10% de descuento!</strong>";
     } else if (count === 0) {
         if (esClienteRecurrente) {
-            document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br>Por iniciar tarjeta tienes 10% OFF en tu próxima visita 🌭✨</strong>";
+            // 🌟 AQUÍ QUEDA EL TEXTO EN AMARILLO CON LA VARIABLE DE LA MOSTAZA:
+            document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br>Por <span style='color: var(--sauce-color);'>iniciar tarjeta tienes 10% OFF en tu próxima visita</span> 🌭✨</strong>";
         } else {
             document.getElementById('statusMsg').innerHTML = "<strong>🌭 ¡Inicia tu camino Panko!<br>Cada compra te acerca a premios y descuentos increíbles ✨</strong>";
         }
