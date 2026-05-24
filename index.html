@@ -193,14 +193,12 @@ body{
     padding:20px;
 }
 
-/* Animación de pulso para los premios activos */
 @keyframes premioActivo {
     0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
     50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(247,224,24,0.7)); }
     100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
 }
 
-/* Aplicar la animación solo al premio que ya se ganó */
 .step.active.is-premio {
     animation: premioActivo 2s infinite ease-in-out;
     background: #ffffff !important;
@@ -267,7 +265,6 @@ async function loadCard() {
         const response = await fetch(CSV_URL);
         let text = await response.text();
         
-        // limpiar UTF8
         text = text.replace(/^\uFEFF/, '');
         const rows = text.trim().split(/\r?\n/);
 
@@ -317,10 +314,8 @@ function renderSteps(count) {
         const esPremio = (i === 3 || i === 6 || i === 9);
         const yaGanado = i <= count;
         
-        // Aplica clases normales o animadas si es premio desbloqueado
         div.className = `step ${yaGanado ? 'active' : ''} ${(yaGanado && esPremio) ? 'is-premio' : ''}`;
 
-        // Nuevos textos visuales para los pasos y premios
         if (i === 3) {
             div.innerHTML = yaGanado ? "✨" : "Stickers"; 
         } else if (i === 6) {
@@ -334,19 +329,35 @@ function renderSteps(count) {
         grid.appendChild(div);
     }
 
-    // Mensajes dinámicos basados en la estrategia de puros descuentos
+    // LÓGICA DE MENSAJES INCLUYENDO EL REINICIO COMPACTO
     if (count >= 9) {
         document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un 20% de descuento en tu cuenta 🏆🔥</strong>";
     } else if (count >= 6) {
         document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Tienes un 10% de descuento 🎉<br>Próxima meta: ¡20% de descuento total!</strong>";
     } else if (count >= 3) {
         document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers ✨<br>Próxima meta: ¡10% de descuento!</strong>";
+    } else if (count === 1) {
+        // En la visita 1 de la nueva vuelta, se activa visualmente el beneficio de lealtad continuo
+        document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br>Por iniciar tarjeta tienes 10% OFF hoy 🌭✨</strong>";
     } else if (count > 0) {
         document.getElementById('statusMsg').innerText = `¡Llevas ${count} de 9 sellos acumulados!`;
     }
 }
 
 loadCard();
+</script>
+    <script>
+// 
+document.addEventListener('contextmenu', event => event.preventDefault());
+
+// 
+document.onkeydown = function(e) {
+    if(e.keyCode == 123) return false; // F12
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false;
+    if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false;
+    if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; // Ver código fuente
+}
 </script>
 </body>
 </html>
