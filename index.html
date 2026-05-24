@@ -6,7 +6,6 @@
 <title>Panko Rewards</title>
 
 <style>
-
 :root{
     --bg-color:#43b1c9;
     --bun-color:#e3f6f9;
@@ -44,9 +43,7 @@ body{
 }
 
 .logo{
-    font-size:2rem;
-    font-weight:bold;
-    margin-bottom:10px;
+    margin-bottom:15px;
 }
 
 .welcome{
@@ -116,19 +113,7 @@ body{
     gap:15px;
     margin-top:25px;
 }
-/* Animación de pulso para los premios activos */
-@keyframes premioActivo {
-    0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
-    50% { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(247,224,24,0.8)); }
-    100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
-}
 
-/* Aplicar la animación solo al premio que ya se ganó */
-.step.active.is-premio {
-    animation: premioActivo 2s infinite ease-in-out;
-    background: #ffffff !important; /* Resalta el fondo en blanco para el premio */
-    font-size: 1.4rem; /* Crece un poco el emoji */
-}
 .step{
     background:rgba(255,255,255,0.2);
     border:2px solid white;
@@ -157,6 +142,20 @@ body{
     padding:20px;
 }
 
+/* Animación de pulso para los premios activos */
+@keyframes premioActivo {
+    0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
+    50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(247,224,24,0.7)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
+}
+
+/* Aplicar la animación solo al premio que ya se ganó */
+.step.active.is-premio {
+    animation: premioActivo 2s infinite ease-in-out;
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    font-size: 1.4rem;
+}
 </style>
 </head>
 
@@ -165,132 +164,78 @@ body{
 <div class="card" id="card" style="display:none;">
 
     <div class="logo">
-    <img src="logo.svg" alt="Panko Logo" style="width: 100%; max-width: 180px; height: auto; display: block; margin: 0 auto 10px;">
-</div>
+        <img src="logo.svg" alt="Panko Logo" style="width: 100%; max-width: 180px; height: auto; display: block; margin: 0 auto 10px;">
+    </div>
 
     <div class="welcome">¡Hola!</div>
 
-    <div class="client-name" id="userName">
-        Cliente
-    </div>
+    <div class="client-name" id="userName">Cliente</div>
 
     <div class="hotdog-container">
-
         <div class="bun"></div>
-
         <div class="sausage"></div>
-
         <div class="sauce" id="sauceLayer">
-
             <svg class="sauce-svg" viewBox="0 0 340 40">
-
                 <path d="M10,20 Q25,0 40,20 T70,20 T100,20 T130,20 T160,20 T190,20 T220,20 T250,20 T280,20 T310,20"/>
-
             </svg>
-
         </div>
-
     </div>
 
     <div class="steps-grid" id="grid"></div>
 
-    <div class="footer-msg" id="statusMsg">
-        Cada compra te acerca a tu premio 🌭
-    </div>
-
+    <div class="footer-msg" id="statusMsg">Cada compra te acerca a tu premio 🌭</div>
 </div>
 
 <script>
-
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
+const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQo1281Gd3SB8Bua6Xm1TItk_iOgImoVkX1xhWzOc1fpxzIeo3ZMfNm4oThLgEcguFmnIwNVK3_Q-gv/pub?output=csv";
 
 async function loadCard() {
-
     const params = new URLSearchParams(window.location.search);
-
     const id = params.get('id');
 
     if (!id) {
-
-        document.body.innerHTML =
-        "<div class='error'>❌ ID inválido</div>";
-
+        document.body.innerHTML = "<div class='error'>❌ ID inválido</div>";
         return;
     }
 
     try {
-
         const response = await fetch(CSV_URL);
-
         let text = await response.text();
-
+        
         // limpiar UTF8
         text = text.replace(/^\uFEFF/, '');
-
         const rows = text.trim().split(/\r?\n/);
-
-        console.log(rows);
 
         let found = null;
 
         for (let i = 1; i < rows.length; i++) {
-
-            const cols = rows[i]
-            .split(',')
-            .map(col =>
-                col
-                .replace(/"/g, '')
-                .trim()
-            );
-
-            console.log(cols);
+            const cols = rows[i].split(',').map(col => col.replace(/"/g, '').trim());
 
             const cliente = {
-
                 id: cols[0],
-
                 sellos: parseInt(cols[1]) || 0,
-
                 nombre: cols[2]
             };
 
-            console.log(cliente);
-
-            if (
-                cliente.id === id
-            ) {
-
+            if (String(cliente.id).trim().toUpperCase() === String(id).trim().toUpperCase()) {
                 found = cliente;
-
                 break;
             }
         }
 
-        console.log(found);
-
         if (!found) {
-
-            document.body.innerHTML =
-            "<div class='error'>❌ Cliente no encontrado</div>";
-
+            document.body.innerHTML = `<div class='error'>❌ Cliente con ID "${id}" no encontrado</div>`;
             return;
         }
 
-        document.getElementById('card').style.display =
-        'block';
-
-        document.getElementById('userName').innerText =
-        found.nombre;
+        document.getElementById('card').style.display = 'block';
+        document.getElementById('userName').innerText = found.nombre;
 
         renderSteps(found.sellos);
 
     } catch (error) {
-
         console.error(error);
-
-        document.body.innerHTML =
-        "<div class='error'>❌ Error cargando tarjeta</div>";
+        document.body.innerHTML = "<div class='error'>❌ Error cargando tarjeta</div>";
     }
 }
 
@@ -299,21 +244,17 @@ function renderSteps(count) {
     const sauce = document.getElementById('sauceLayer');
 
     grid.innerHTML = '';
-    
-    // Mueve la barrita de mostaza según los pasos
     sauce.style.width = ((count / 9) * 100) + "%";
 
     for (let i = 1; i <= 9; i++) {
         const div = document.createElement('div');
         
-        // Revisamos si el paso actual ya está activo y si es un premio (3, 6 o 9)
         const esPremio = (i === 3 || i === 6 || i === 9);
         const yaGanado = i <= count;
         
-        // Si ya se ganó y es premio, le agregamos la clase 'is-premio' para activar el CSS animado
-        div.className = `step ${yaGanado ? 'active' : ''} ${ (yaGanado && esPremio) ? 'is-premio' : '' }`;
-        
-        // Asignamos los emojis correspondientes
+        // Aplica clases normales o animadas si es premio desbloqueado
+        div.className = `step ${yaGanado ? 'active' : ''} ${(yaGanado && esPremio) ? 'is-premio' : ''}`;
+
         if (i === 3) {
             div.innerHTML = "✨"; 
         } else if (i === 6) {
@@ -321,13 +262,13 @@ function renderSteps(count) {
         } else if (i === 9) {
             div.innerHTML = "🏆"; 
         } else {
-            div.innerHTML = i; // Pasos normales
+            div.innerHTML = i;
         }
-        
+
         grid.appendChild(div);
     }
 
-    // Cambia el mensaje inferior según el avance
+    // Mensajes dinámicos en base al avance
     if (count >= 9) {
         document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un Doggo Chili o Club 🌭🔥</strong>";
     } else if (count >= 6) {
@@ -337,9 +278,9 @@ function renderSteps(count) {
     } else if (count > 0) {
         document.getElementById('statusMsg').innerText = `¡Llevas ${count} de 9 sellos acumulados!`;
     }
-}}
-loadCard();
+}
 
+loadCard();
 </script>
 </body>
 </html>
