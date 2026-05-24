@@ -329,20 +329,19 @@ function renderSteps(count) {
         grid.appendChild(div);
     }
 
-    // LÓGICA DE MENSAJES INCLUYENDO EL REINICIO COMPACTO
+    // LÓGICA DE MENSAJES CORREGIDA (DETONA EN CERO)
     if (count >= 9) {
         document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un 20% de descuento en tu cuenta 🏆🔥</strong>";
     } else if (count >= 6) {
         document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Tienes un 10% de descuento 🎉<br>Próxima meta: ¡20% de descuento total!</strong>";
     } else if (count >= 3) {
         document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers ✨<br>Próxima meta: ¡10% de descuento!</strong>";
-    } else if (count === 1) {
-        // En la visita 1 de la nueva vuelta, se activa visualmente el beneficio de lealtad continuo
-        document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br>Por iniciar tarjeta tienes 10% OFF en tu próxima cuenta 🌭✨</strong>";
+    } else if (count === 0) {
+        // En cuanto limpias su tarjeta a 0, este es el mensaje que verá en su celular:
+        document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br>Por iniciar tarjeta tienes 10% OFF en tu próxima visita 🌭✨</strong>";
     } else if (count > 0) {
         document.getElementById('statusMsg').innerText = `¡Llevas ${count} de 9 sellos acumulados!`;
     }
-}
 
 loadCard();
 </script>
