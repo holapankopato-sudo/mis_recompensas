@@ -281,39 +281,46 @@ async function loadCard() {
 }
 
 function renderSteps(count) {
-
-    const grid =
-    document.getElementById('grid');
-
-    const sauce =
-    document.getElementById('sauceLayer');
+    const grid = document.getElementById('grid');
+    const sauce = document.getElementById('sauceLayer');
 
     grid.innerHTML = '';
-
-    sauce.style.width =
-    ((count / 9) * 100) + "%";
+    
+    // Animación de la mostaza en base a 9 pasos
+    sauce.style.width = ((count / 9) * 100) + "%";
 
     for (let i = 1; i <= 9; i++) {
-
-        const div =
-        document.createElement('div');
-
-        div.className =
-        `step ${i <= count ? 'active' : ''}`;
-
-        div.innerHTML =
-        i === 9 ? "🎁" : i;
-
+        const div = document.createElement('div');
+        div.className = `step ${i <= count ? 'active' : ''}`;
+        
+        // Lógica de premios personalizados por pasos
+        if (i === 3) {
+            div.innerHTML = "✨"; // Premio de los 3 Stickers
+            div.title = "3 Stickers gratis";
+        } else if (i === 6) {
+            div.innerHTML = "🌭"; // Premio del Doggo Street
+            div.title = "Doggo Street";
+        } else if (i === 9) {
+            div.innerHTML = "🏆"; // Premio Mayor: Doggo Chili o Club
+            div.title = "Doggo Chili o Club";
+        } else {
+            div.innerHTML = i; // Pasos normales (1, 2, 4, 5, 7, 8)
+        }
+        
         grid.appendChild(div);
     }
 
+    // Actualización de los mensajes en el footer según el avance del cliente
     if (count >= 9) {
-
-        document.getElementById('statusMsg').innerText =
-        "🎉 ¡FELICIDADES! Premio desbloqueado 🌭";
+        document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un Doggo Chili o Club 🌭🔥</strong>";
+    } else if (count >= 6) {
+        document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Desbloqueaste un Doggo Street 🌭<br>Próxima meta: ¡Doggo Chili o Club!</strong>";
+    } else if (count >= 3) {
+        document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers ✨<br>Próxima meta: ¡Doggo Street!</strong>";
+    } else if (count > 0) {
+        document.getElementById('statusMsg').innerText = `¡Llevas ${count} de 9 sellos acumulados!`;
     }
 }
-
 loadCard();
 
 </script>
