@@ -116,7 +116,19 @@ body{
     gap:15px;
     margin-top:25px;
 }
+/* Animación de pulso para los premios activos */
+@keyframes premioActivo {
+    0% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
+    50% { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(247,224,24,0.8)); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(247,224,24,0.4)); }
+}
 
+/* Aplicar la animación solo al premio que ya se ganó */
+.step.active.is-premio {
+    animation: premioActivo 2s infinite ease-in-out;
+    background: #ffffff !important; /* Resalta el fondo en blanco para el premio */
+    font-size: 1.4rem; /* Crece un poco el emoji */
+}
 .step{
     background:rgba(255,255,255,0.2);
     border:2px solid white;
@@ -288,31 +300,34 @@ function renderSteps(count) {
 
     grid.innerHTML = '';
     
-    // Animación de la mostaza en base a 9 pasos
+    // Mueve la barrita de mostaza según los pasos
     sauce.style.width = ((count / 9) * 100) + "%";
 
     for (let i = 1; i <= 9; i++) {
         const div = document.createElement('div');
-        div.className = `step ${i <= count ? 'active' : ''}`;
         
-        // Lógica de premios personalizados por pasos
+        // Revisamos si el paso actual ya está activo y si es un premio (3, 6 o 9)
+        const esPremio = (i === 3 || i === 6 || i === 9);
+        const yaGanado = i <= count;
+        
+        // Si ya se ganó y es premio, le agregamos la clase 'is-premio' para activar el CSS animado
+        div.className = `step ${yaGanado ? 'active' : ''} ${ (yaGanado && esPremio) ? 'is-premio' : '' }`;
+        
+        // Asignamos los emojis correspondientes
         if (i === 3) {
-            div.innerHTML = "✨"; // Premio de los 3 Stickers
-            div.title = "3 Stickers gratis";
+            div.innerHTML = "✨"; 
         } else if (i === 6) {
-            div.innerHTML = "🌭"; // Premio del Doggo Street
-            div.title = "Doggo Street";
+            div.innerHTML = "🌭"; 
         } else if (i === 9) {
-            div.innerHTML = "🏆"; // Premio Mayor: Doggo Chili o Club
-            div.title = "Doggo Chili o Club";
+            div.innerHTML = "🏆"; 
         } else {
-            div.innerHTML = i; // Pasos normales (1, 2, 4, 5, 7, 8)
+            div.innerHTML = i; // Pasos normales
         }
         
         grid.appendChild(div);
     }
 
-    // Actualización de los mensajes en el footer según el avance del cliente
+    // Cambia el mensaje inferior según el avance
     if (count >= 9) {
         document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un Doggo Chili o Club 🌭🔥</strong>";
     } else if (count >= 6) {
@@ -322,7 +337,7 @@ function renderSteps(count) {
     } else if (count > 0) {
         document.getElementById('statusMsg').innerText = `¡Llevas ${count} de 9 sellos acumulados!`;
     }
-}
+}}
 loadCard();
 
 </script>
