@@ -19,7 +19,7 @@
     
 <style>
 :root{
-    --bg-color:#43b1c9;
+    --bg-color:#f4eee1;
     --bun-color:#e3f6f9;
     --sausage-color:#61cbd9;
     --sauce-color:#f7e018;
@@ -348,7 +348,7 @@ function renderSteps(count) {
     } else if (count === 0) {
         if (esClienteRecurrente) {
             // 🌟 AQUÍ QUEDA EL TEXTO EN AMARILLO CON LA VARIABLE DE LA MOSTAZA:
-            document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<span style='color: var(--sauce-color);'>Por iniciar tarjeta tienes 10% OFF en tu próxima visita</span> 🌭✨</strong>";
+            document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br><span style='color: var(--sauce-color);'>Por iniciar tarjeta tienes 10% OFF en tu próxima visita</span> 🌭✨</strong>";
         } else {
             document.getElementById('statusMsg').innerHTML = "<strong>🌭 ¡Inicia tu camino Panko!<br>Cada compra te acerca a premios y descuentos increíbles ✨</strong>";
         }
