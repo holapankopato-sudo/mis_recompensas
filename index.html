@@ -279,7 +279,8 @@ async function loadCard() {
             const cliente = {
                 id: cols[0],
                 sellos: parseInt(cols[1]) || 0,
-                nombre: cols[2]
+                nombre: cols[2],
+                status: cols[3] ? cols[3].toUpperCase() : '' // Lee la cuarta columna (Columna D)
             };
 
             if (String(cliente.id).trim().toUpperCase() === String(id).trim().toUpperCase()) {
@@ -293,8 +294,8 @@ async function loadCard() {
             return;
         }
 
-        // Detectar si el ID empieza con "R" (Caso Insensible a Mayúsculas)
-        if (String(found.id).toUpperCase().startsWith('R')) {
+        // Si la cuarta columna tiene exactamente una "R", se activa la recurrencia
+        if (found.status === 'R') {
             esClienteRecurrente = true;
         }
 
@@ -337,7 +338,7 @@ function renderSteps(count) {
         grid.appendChild(div);
     }
 
-    // SISTEMA DE SEGMENTACIÓN INTELIGENTE DE MENSAJES
+    // SISTEMA DE SEGMENTACIÓN INTELIGENTE BASADO EN LA COLUMNA STATUS
     if (count >= 9) {
         document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un 20% de descuento en tu cuenta 🏆🔥</strong>";
     } else if (count >= 6) {
@@ -345,7 +346,6 @@ function renderSteps(count) {
     } else if (count >= 3) {
         document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers ✨<br>Próxima meta: ¡10% de descuento!</strong>";
     } else if (count === 0) {
-        // Validación basada en el prefijo del ID
         if (esClienteRecurrente) {
             document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br>Por iniciar tarjeta tienes 10% OFF en tu próxima visita 🌭✨</strong>";
         } else {
@@ -357,11 +357,12 @@ function renderSteps(count) {
 }
 loadCard();
 </script>
-    <script>
-// 
+
+<script>
+// Bloquear clic derecho
 document.addEventListener('contextmenu', event => event.preventDefault());
 
-// 
+// Bloquear herramientas de desarrollo
 document.onkeydown = function(e) {
     if(e.keyCode == 123) return false; // F12
     if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false;
