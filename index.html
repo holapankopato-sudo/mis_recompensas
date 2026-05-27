@@ -230,7 +230,7 @@ body{
     <div class="welcome">¡Hola!</div>
 
     <div class="client-name" id="userName">Cliente</div>
-    <div class="card-subtitle">Panko Pato Club</div>
+    <div class="card-subtitle">Panko Loyalty</div>
 
     <div class="hotdog-container">
         <div class="bun"></div>
@@ -351,15 +351,15 @@ function renderSteps(count) {
 
     // SISTEMA DE SEGMENTACIÓN INTELIGENTE BASADO EN LA COLUMNA STATUS
     if (count >= 9) {
-        document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste un 20% de descuento en tu cuenta 🏆🔥</strong>";
+        document.getElementById('statusMsg').innerHTML = "<strong>🎉 ¡TARJETA COMPLETA!<br>Ganaste 20% OFF en tu próximo pedido 🏆🔥</strong>";
     } else if (count >= 6) {
-        document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Tienes un 10% de descuento 🎉<br>Próxima meta: ¡20% de descuento total!</strong>";
+        document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Tienes un 10% OFF en tu próximo pedido 🎉<br>Próxima meta: ¡20% de descuento!</strong>";
     } else if (count >= 3) {
-        document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers ✨<br>Próxima meta: ¡10% de descuento!</strong>";
+        document.getElementById('statusMsg').innerHTML = "<strong>¡Felicidades! Ganaste 3 Stickers colaborativos ✨<br>Próxima meta: ¡10% de descuento!</strong>";
     } else if (count === 0) {
         if (esClienteRecurrente) {
             // 🌟 AQUÍ QUEDA EL TEXTO EN AMARILLO CON LA VARIABLE DE LA MOSTAZA:
-            document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br><span style='color: var(--sauce-color);'>Por iniciar tarjeta tienes 10% OFF en tu próxima visita</span> 🌭✨</strong>";
+            document.getElementById('statusMsg').innerHTML = "<strong>🔥 ¡Bienvenido de vuelta!<br><span style='color: var(--sauce-color);'>Por iniciar tarjeta tienes 10% OFF en tu próximo pedido</span> 🌭✨</strong>";
         } else {
             document.getElementById('statusMsg').innerHTML = "<strong>🌭 ¡Inicia tu camino Panko!<br>Cada compra te acerca a premios y descuentos increíbles ✨</strong>";
         }
